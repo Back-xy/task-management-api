@@ -29,8 +29,11 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"packages": {},
-								"type": "text/javascript"
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -48,7 +51,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"po@gmail.com\",\r\n  \"password\": \"111111\"\r\n}\r\n",
+							"raw": "{\r\n  \"email\": \"po@example.com\",\r\n  \"password\": \"111111\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -74,6 +77,49 @@
 			"name": "Users",
 			"item": [
 				{
+					"name": "Create User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test Developer\",\r\n  \"email\": \"dev1@example.com\",\r\n  \"password\": \"111111\",\r\n  \"role\": \"developer\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get Users",
 					"request": {
 						"auth": {
@@ -98,51 +144,6 @@
 							"raw": "{{base_url}}/api/users",
 							"host": [
 								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create User",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Test Developer\",\r\n  \"email\": \"dev1@examplede.com\",\r\n  \"password\": \"d\",\r\n  \"role\": \"developer\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "https://task-management-api.test/api/users",
-							"protocol": "https",
-							"host": [
-								"task-management-api",
-								"test"
 							],
 							"path": [
 								"api",
@@ -183,11 +184,9 @@
 							}
 						},
 						"url": {
-							"raw": "https://task-management-api.test/api/users/2",
-							"protocol": "https",
+							"raw": "{{base_url}}/api/users/2",
 							"host": [
-								"task-management-api",
-								"test"
+								"{{base_url}}"
 							],
 							"path": [
 								"api",
@@ -220,11 +219,9 @@
 							}
 						],
 						"url": {
-							"raw": "https://task-management-api.test/api/users/2",
-							"protocol": "https",
+							"raw": "{{base_url}}/api/users/2",
 							"host": [
-								"task-management-api",
-								"test"
+								"{{base_url}}"
 							],
 							"path": [
 								"api",
@@ -240,42 +237,6 @@
 		{
 			"name": "Tasks",
 			"item": [
-				{
-					"name": "Get Tasks",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "https://task-management-api.test/api/tasks",
-							"protocol": "https",
-							"host": [
-								"task-management-api",
-								"test"
-							],
-							"path": [
-								"api",
-								"tasks"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "Create Task",
 					"request": {
@@ -299,7 +260,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"title\": \"Implement TaskController\",\r\n  \"description\": \"Set up store and show methods\",\r\n  \"due_date\": \"2025-04-01\",\r\n  \"assigned_to\": 1,\r\n  \"parent_id\": null\r\n}\r\n",
+							"raw": "{\r\n  \"title\": \"Task One\",\r\n  \"description\": \"Set up store and show methods\",\r\n  \"due_date\": \"2025-04-01\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -307,11 +268,43 @@
 							}
 						},
 						"url": {
-							"raw": "https://task-management-api.test/api/tasks",
-							"protocol": "https",
+							"raw": "{{base_url}}/api/tasks",
 							"host": [
-								"task-management-api",
-								"test"
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tasks",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tasks",
+							"host": [
+								"{{base_url}}"
 							],
 							"path": [
 								"api",
@@ -343,16 +336,14 @@
 							}
 						],
 						"url": {
-							"raw": "https://task-management-api.test/api/tasks/8",
-							"protocol": "https",
+							"raw": "{{base_url}}/api/tasks/33",
 							"host": [
-								"task-management-api",
-								"test"
+								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"tasks",
-								"8"
+								"33"
 							]
 						}
 					},
@@ -381,7 +372,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"title\": \"Updated Task Title\",\r\n  \"description\": \"Updated description for the task\"\r\n}\r\n",
+							"raw": "{\r\n  \"assigned_to\": 5\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -389,16 +380,14 @@
 							}
 						},
 						"url": {
-							"raw": "https://task-management-api.test/api/tasks/3",
-							"protocol": "https",
+							"raw": "{{base_url}}/api/tasks/33",
 							"host": [
-								"task-management-api",
-								"test"
+								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"tasks",
-								"3"
+								"33"
 							]
 						}
 					},
@@ -435,16 +424,14 @@
 							}
 						},
 						"url": {
-							"raw": "https://task-management-api.test/api/tasks/9",
-							"protocol": "https",
+							"raw": "{{base_url}}/api/tasks/32",
 							"host": [
-								"task-management-api",
-								"test"
+								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"tasks",
-								"9"
+								"32"
 							]
 						}
 					},
