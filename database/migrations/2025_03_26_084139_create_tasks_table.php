@@ -15,9 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->foreignId('assigned_to')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
-            $table->date('due_date');
             $table->enum('status', [
                 'TODO',
                 'IN_PROGRESS',
@@ -26,7 +23,10 @@ return new class extends Migration
                 'DONE',
                 'REJECTED'
             ])->default('TODO');
+            $table->foreignId('assigned_to')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->foreignId('parent_id')->nullable()->constrained('tasks')->nullOnDelete();
+            $table->date('due_date');
             $table->timestamps();
         });
     }
