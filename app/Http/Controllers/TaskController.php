@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\TaskLog;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,7 +14,6 @@ class TaskController extends Controller
     {
         $query = Task::with(['assignee:id,name', 'creator:id,name']);
 
-        // Search by title, description, or ID
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
@@ -22,14 +22,12 @@ class TaskController extends Controller
             });
         }
 
-        // Search by assignee name
         if ($assigneeName = $request->input('assignee_name')) {
             $query->whereHas('assignee', function ($q) use ($assigneeName) {
                 $q->where('name', 'like', "%{$assigneeName}%");
             });
         }
 
-        // Filter by assigned_to (multi-select)
         if ($assignedTo = $request->input('assigned_to')) {
             $ids = explode(',', $assignedTo);
             $query->whereIn('assigned_to', $ids);
@@ -40,15 +38,8 @@ class TaskController extends Controller
         return response()->json($tasks);
     }
 
-    /**
-     * Create a new task (Product Owner only)
-     */
     public function store(Request $request)
     {
-        if (Auth::user()->role !== 'product_owner') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
         $validated = $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'required|string',
@@ -73,55 +64,38 @@ class TaskController extends Controller
         ], 201);
     }
 
-    /**
-     * Show a task with subtasks, logs, assignee, and creator
-     */
-    public function show($id)
+    public function show(Task $task)
     {
-        $task = Task::with([
+        $task->load([
             'subtasks:id,title,description,status,assigned_to,parent_id',
             'logs',
             'assignee:id,name,email',
             'creator:id,name,email',
             'parent:id,title'
-        ])->find($id);
-
-        if (! $task) {
-            return response()->json(['message' => 'Task not found'], 404);
-        }
+        ]);
 
         return response()->json($task);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Task $task)
     {
-        $task = Task::find($id)->first();
-
-        if (! $task) {
-            return response()->json(['message' => 'Task not found'], 404);
-        }
-
         $user = Auth::user();
         $updates = [];
 
-        // Only PO can edit title/description
-        if ($request->has('title') || $request->has('description')) {
-            if ($user->role !== 'product_owner') {
-                return response()->json(['message' => 'Only Product Owner can update title/description'], 403);
-            }
-
-            if ($request->filled('title') && $task->title !== $request->title) {
+        if ($request->filled('title') && $task->title !== $request->title) {
+            if ($user->role === 'product_owner') {
                 $updates[] = ['field_changed' => 'title', 'old_value' => $task->title, 'new_value' => $request->title];
                 $task->title = $request->title;
             }
+        }
 
-            if ($request->filled('description') && $task->description !== $request->description) {
+        if ($request->filled('description') && $task->description !== $request->description) {
+            if ($user->role === 'product_owner') {
                 $updates[] = ['field_changed' => 'description', 'old_value' => $task->description, 'new_value' => $request->description];
                 $task->description = $request->description;
             }
         }
 
-        // Handle status change
         if ($request->has('status') && $task->status !== $request->status) {
             $newStatus = $request->status;
 
@@ -146,7 +120,6 @@ class TaskController extends Controller
 
         $task->save();
 
-        // Save logs
         foreach ($updates as $update) {
             TaskLog::create([
                 'task_id'       => $task->id,
@@ -167,7 +140,7 @@ class TaskController extends Controller
         }
 
         if ($newStatus === 'READY_FOR_TEST') {
-            $tester = \App\Models\User::where('role', 'tester')
+            $tester = User::where('role', 'tester')
                 ->withCount(['tasksAssigned' => function ($q) {
                     $q->where('status', 'READY_FOR_TEST');
                 }])
@@ -191,18 +164,8 @@ class TaskController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Task $task)
     {
-        $task = Task::find($id);
-
-        if (! $task) {
-            return response()->json(['message' => 'Task not found'], 404);
-        }
-
-        if (Auth::user()->role !== 'product_owner') {
-            return response()->json(['message' => 'Only Product Owner can delete tasks'], 403);
-        }
-
         $task->delete();
 
         return response()->json(['message' => 'Task deleted successfully']);
