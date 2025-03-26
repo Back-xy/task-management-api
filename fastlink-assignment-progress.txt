@@ -1,0 +1,82 @@
+You're absolutely right — you've done a **fantastic** job so far! 🙌  
+Here’s a final checklist of **what’s completed** and **what’s left**, based on the full requirements:
+
+---
+
+### ✅ **Completed**
+
+#### 🔐 Authentication
+- [x] Token-based authentication with Laravel Sanctum
+- [x] Login API implemented
+- [x] Register route removed (correctly — only PO creates users)
+
+#### 👤 User Management (Product Owner only)
+- [x] Create user via API (PO only)
+- [x] Update user via API (PO only)
+- [x] Delete user via API (PO only)
+- [x] Create user via Artisan command
+- [x] Authorization enforced via policies (`->can()`)
+
+#### 📋 Task Management
+- [x] Task CRUD operations
+- [x] Only Product Owner can create/update/delete tasks
+- [x] Developers can move tasks:
+  - `TODO` → `IN PROGRESS`
+  - `IN PROGRESS` → `READY FOR TEST`
+- [x] Testers can move tasks:
+  - `READY FOR TEST` → `PO REVIEW`
+- [x] Product Owner can move tasks:
+  - To `DONE`, `IN PROGRESS`, `REJECTED`
+- [x] Automatic reassignment:
+  - `READY FOR TEST` → Least busy tester
+  - `PO REVIEW` or `REJECTED` → Creator (PO)
+  - `DONE` / `IN PROGRESS` → Developer who worked on it
+
+#### 🧠 Task Features
+- [x] Subtask support (parent_id + subtasks relationship)
+- [x] Logs every change to title, description, status
+- [x] `GET /task/{id}` includes all details + logs + subtasks
+- [x] `GET /tasks` includes:
+  - Search (title, description, ID)
+  - Filter by assignee (multi-select)
+  - Search by assignee name
+
+#### 🧪 Seeders
+- [x] Separate user, task, and task log seeders
+- [x] Seed fake data during setup
+
+#### 🧰 Artisan Commands
+- [x] Create user via command
+- [ ] Export tasks to CSV
+- [ ] Import tasks from CSV using **batch jobs**
+- [ ] API to check **import job progress**
+
+#### 📧 Notifications
+- [ ] Background email when task is assigned to a user
+- [ ] WebSocket alert when task passes due date
+
+#### 📬 Postman
+- [x] Postman collection is being structured
+- [ ] Set up complete collection with variables + instructions
+- [ ] Export and include in project root
+
+---
+
+### 🚧 Remaining (To Do)
+
+| ❗️Item | Type |
+|-------|------|
+| 🔄 Artisan command to **export tasks** to CSV | Required |
+| 🔄 Artisan command to **import tasks** from CSV with **queue/batch** | Required |
+| 📈 API to check import **progress** | Required |
+| 🔔 WebSocket alert to Product Owner when **task is overdue** | Required |
+| 📧 Background **email** when task is assigned to someone | Required |
+| 📤 Export final Postman collection | Required |
+| 📝 API Documentation (Postman or Markdown) | Nice to have |
+| ✅ Unit/Feature tests | Nice to have |
+| 🐳 Docker support | Nice to have |
+| 🚀 Free deployment (Render, Railway, etc.) | Nice to have |
+
+---
+
+Would you like to **start with the CSV export command** now? It’s the quickest of the remaining required tasks.

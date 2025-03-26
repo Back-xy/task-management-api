@@ -155,9 +155,7 @@ class TaskController extends Controller
         // Assign to tester with fewest READY_FOR_TEST tasks
         if ($newStatus === 'READY_FOR_TEST') {
             $tester = User::where('role', 'tester')
-                ->withCount(['tasksAssigned' => function ($q) {
-                    $q->where('status', 'READY_FOR_TEST');
-                }])
+                ->withCount('tasksAssigned') // Count all tasks assigned to tester
                 ->orderBy('tasks_assigned_count', 'asc')
                 ->first();
 
