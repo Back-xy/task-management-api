@@ -82,29 +82,41 @@ class TaskController extends Controller
         $user = Auth::user();
         $updates = [];
 
-        if ($request->filled('title') && $task->title !== $request->title) {
-            if ($user->role === 'product_owner') {
+        // Only Product Owner can update title/description/assigned_to
+        if ($user->role === 'product_owner') {
+            if ($request->filled('title') && $task->title !== $request->title) {
                 $updates[] = ['field_changed' => 'title', 'old_value' => $task->title, 'new_value' => $request->title];
                 $task->title = $request->title;
             }
-        }
 
-        if ($request->filled('description') && $task->description !== $request->description) {
-            if ($user->role === 'product_owner') {
+            if ($request->filled('description') && $task->description !== $request->description) {
                 $updates[] = ['field_changed' => 'description', 'old_value' => $task->description, 'new_value' => $request->description];
                 $task->description = $request->description;
             }
+
+            if ($request->filled('assigned_to') && $task->assigned_to !== $request->assigned_to) {
+                $updates[] = [
+                    'field_changed' => 'assigned_to',
+                    'old_value'     => $task->assigned_to,
+                    'new_value'     => $request->assigned_to,
+                ];
+                $task->assigned_to = $request->assigned_to;
+            }
         }
 
+        // Handle status changes
         if ($request->has('status') && $task->status !== $request->status) {
             $newStatus = $request->status;
 
             $allowed = match ($user->role) {
                 'developer' => $task->assigned_to === $user->id &&
                     in_array([$task->status, $newStatus], [['TODO', 'IN_PROGRESS'], ['IN_PROGRESS', 'READY_FOR_TEST']]),
+
                 'tester' => $task->assigned_to === $user->id &&
                     $task->status === 'READY_FOR_TEST' && $newStatus === 'PO_REVIEW',
-                'product_owner' => true,
+
+                'product_owner' => in_array($newStatus, ['DONE', 'IN_PROGRESS', 'REJECTED']),
+
                 default => false,
             };
 
@@ -135,10 +147,12 @@ class TaskController extends Controller
 
     protected function handleAutoAssignment(Task $task, string $newStatus)
     {
-        if ($newStatus === 'PO_REVIEW') {
+        // Assign to Product Owner on review or rejection
+        if (in_array($newStatus, ['PO_REVIEW', 'REJECTED'])) {
             $task->assigned_to = $task->created_by;
         }
 
+        // Assign to tester with fewest READY_FOR_TEST tasks
         if ($newStatus === 'READY_FOR_TEST') {
             $tester = User::where('role', 'tester')
                 ->withCount(['tasksAssigned' => function ($q) {
@@ -152,17 +166,20 @@ class TaskController extends Controller
             }
         }
 
+        // Reassign to developer if returning for work or marking done
         if (in_array($newStatus, ['IN_PROGRESS', 'DONE'])) {
             $lastDev = TaskLog::where('task_id', $task->id)
                 ->where('field_changed', 'status')
                 ->whereIn('new_value', ['IN_PROGRESS', 'READY_FOR_TEST'])
-                ->latest()->first();
+                ->latest()
+                ->first();
 
             if ($lastDev) {
                 $task->assigned_to = $lastDev->changed_by;
             }
         }
     }
+
 
     public function destroy(Task $task)
     {
