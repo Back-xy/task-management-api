@@ -47,18 +47,18 @@ Here’s a final checklist of **what’s completed** and **what’s left**, base
 
 #### 🧰 Artisan Commands
 - [x] Create user via command
-- [ ] Export tasks to CSV
-- [ ] Import tasks from CSV using **batch jobs**
-- [ ] API to check **import job progress**
+- [X] Export tasks to CSV
+- [X] Import tasks from CSV using **batch jobs**
+- [X] API to check **import job progress**
 
 #### 📧 Notifications
-- [ ] Background email when task is assigned to a user
+- [X] Background email when task is assigned to a user
 - [ ] WebSocket alert when task passes due date
 
 #### 📬 Postman
 - [x] Postman collection is being structured
-- [ ] Set up complete collection with variables + instructions
-- [ ] Export and include in project root
+- [X] Set up complete collection with variables + instructions
+- [X] Export and include in project root
 
 ---
 
@@ -66,11 +66,7 @@ Here’s a final checklist of **what’s completed** and **what’s left**, base
 
 | ❗️Item | Type |
 |-------|------|
-| 🔄 Artisan command to **export tasks** to CSV | Required |
-| 🔄 Artisan command to **import tasks** from CSV with **queue/batch** | Required |
-| 📈 API to check import **progress** | Required |
 | 🔔 WebSocket alert to Product Owner when **task is overdue** | Required |
-| 📧 Background **email** when task is assigned to someone | Required |
 | 📤 Export final Postman collection | Required |
 | 📝 API Documentation (Postman or Markdown) | Nice to have |
 | ✅ Unit/Feature tests | Nice to have |
