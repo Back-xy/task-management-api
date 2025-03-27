@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\TaskLog;
 use App\Models\User;
+use App\Notifications\TaskAssigned;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -128,6 +129,10 @@ class TaskController extends Controller
             $task->status = $newStatus;
 
             $this->handleAutoAssignment($task, $newStatus);
+        }
+
+        if ($task->isDirty('assigned_to') && $task->assigned_to) {
+            $task->assignee?->notify(new TaskAssigned($task));
         }
 
         $task->save();
