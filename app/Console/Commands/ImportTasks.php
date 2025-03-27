@@ -12,7 +12,7 @@ class ImportTasks extends Command
      *
      * @var string
      */
-    protected $signature = 'import:tasks {file}';
+    protected $signature = 'import:tasks {file : The path to the CSV file inside storage/app}';
 
     /**
      * The console command description.

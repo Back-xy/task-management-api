@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\ImportStatus;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -32,23 +33,47 @@ class ImportTasksJob implements ShouldQueue
      * Execute the job.
      * Reads tasks from a CSV file and inserts them into the database.
      */
-    public function handle(): void
+    public function handle()
     {
-        // Load and parse the CSV
-        $csv = Reader::createFromPath($this->filePath, 'r');
-        $csv->setHeaderOffset(0); // First row as header
-        $csv->setEscape(''); // Avoid deprecation warning in PHP 8.4+
+        // Create a new import status record to track progress
+        $status = ImportStatus::create([
+            'file' => basename($this->filePath),
+            'status' => 'processing',
+        ]);
 
-        $records = (new Statement())->process($csv);
+        try {
+            // Load and parse the CSV file
+            $csv = Reader::createFromPath($this->filePath, 'r');
+            $csv->setHeaderOffset(0); // First row is the header
+            $csv->setEscape(''); // Avoids deprecation warning
 
-        foreach ($records as $record) {
-            Task::create([
-                'title'       => $record['Title'] ?? 'Untitled',
-                'description' => $record['Description'] ?? '',
-                'status'      => $record['Status'] ?? 'TODO',
-                'due_date'    => $record['Due Date'] ?? now(),
-                'assigned_to' => $this->getUserIdByName($record['Assigned To'] ?? null),
-                'created_by'  => $this->getUserIdByName($record['Created By'] ?? null),
+            // Convert CSV records to array and store total rows
+            $records = iterator_to_array($csv->getRecords());
+            $status->total_rows = count($records);
+            $status->save();
+
+            // Insert each record into the tasks table
+            foreach ($records as $record) {
+                Task::create([
+                    'title'       => $record['title'] ?? 'Untitled',
+                    'description' => $record['description'] ?? '',
+                    'status'      => $record['status'] ?? 'TODO',
+                    'due_date'    => $record['due_date'] ?? now()->addWeek(),
+                    'assigned_to' => $record['assigned_to'] ?? null,
+                    'created_by'  => $record['created_by'] ?? 1,
+                ]);
+
+                // Increment the number of processed rows
+                $status->increment('processed_rows');
+            }
+
+            // Mark the import as completed
+            $status->update(['status' => 'completed']);
+        } catch (\Throwable $e) {
+            // On error, mark import as failed and store the error message
+            $status->update([
+                'status' => 'failed',
+                'error_message' => $e->getMessage(),
             ]);
         }
     }

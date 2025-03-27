@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ImportStatusController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use App\Models\Task;
@@ -46,4 +47,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])
         ->can('delete', 'task');
+});
+
+// Import Status Routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/import-status/{id}', [ImportStatusController::class, 'show']);
 });
