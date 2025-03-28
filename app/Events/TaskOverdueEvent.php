@@ -28,4 +28,16 @@ class TaskOverdueEvent implements ShouldBroadcast
     {
         return 'task.overdue';
     }
+
+    public function broadcastWith()
+    {
+        return [
+            'task' => [
+                'id'       => $this->task->id,
+                'title'    => $this->task->title,
+                'due_date' => \Carbon\Carbon::parse($this->task->due_date)->toDateString(),
+                'message'  => 'This task is overdue!',
+            ],
+        ];
+    }
 }

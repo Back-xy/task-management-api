@@ -1,5 +1,4 @@
 import Echo from "laravel-echo";
-
 import Pusher from "pusher-js";
 window.Pusher = Pusher;
 
@@ -13,12 +12,7 @@ window.Echo = new Echo({
     enabledTransports: ["ws", "wss"],
     auth: {
         headers: {
-            Authorization: `Bearer ${yourTokenHere}`,
+            Authorization: `Bearer ${yourTokenHere}`, // dynamically set after login
         },
     },
-});
-
-Echo.private(`user.${userId}`).listen(".task.overdue", (event) => {
-    console.log("Overdue task!", event.task);
-    // Show alert, notify product owner, etc.
 });
