@@ -80,6 +80,14 @@ MAIL_FROM_NAME="Task Management"
 ```
 
 #### WebSockets (Reverb)
+Simply run the following command to automatically configure your environment for Reverb:
+
+```bash
+php artisan reverb:install --no-interaction
+```
+
+This command will automatically set the following values in your `.env` file:
+
 ```
 BROADCAST_DRIVER=reverb
 
@@ -94,6 +102,8 @@ VITE_REVERB_HOST="${REVERB_HOST}"
 VITE_REVERB_PORT="${REVERB_PORT}"
 VITE_REVERB_SCHEME="http"
 ```
+
+---
 
 ### 5. Migrate and Seed
 ```bash
@@ -177,13 +187,9 @@ When a task passes its due date, the product owner will receive a WebSocket even
 
 Broadcast events:
 - `App\Events\TaskOverdue`
+- Scheduled for every 10 seconds.
 
-Scheduled every 10 seconds using:
-```php
-Schedule::command('tasks:check-overdue')->everyTenSeconds();
-```
-
-Below is an updated documentation snippet that explains how the WebSocket alerts work and how testers can verify them using the frontend route we created:
+Below is guide documentation snippet that explains how the WebSocket alerts work and how testers can verify them using the frontend route we created:
 
 ---
 

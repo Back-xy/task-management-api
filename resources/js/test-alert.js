@@ -47,6 +47,5 @@ document.addEventListener("DOMContentLoaded", () => {
         const pre = document.createElement("pre");
         pre.textContent = JSON.stringify(task, null, 2);
         container.appendChild(pre);
-        container.appendChild();
     }
 });
