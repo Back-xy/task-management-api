@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "f18a2a21-2e78-4a4b-b591-bd3e955af48b",
-		"name": "Task-Management-API-Documentation",
+		"_postman_id": "6c462ef8-b93b-4419-b85e-c0b32c3d40c3",
+		"name": "task-management-api-documentation",
 		"description": "This API provides endpoints for user authentication, user management, task management, and CSV import status checking. The endpoints use token-based authentication (except for login). Replace `{{base_url}}` with your API base URL (e.g., `http://localhost:8000`) when testing in Postman.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "22389980"
