@@ -45,7 +45,8 @@ cd task-management-api
 ### 2. Install Dependencies
 ```bash
 composer install
-npm install && npm run build
+npm install
+npm run build
 ```
 
 ### 3. Create `.env` File
@@ -226,7 +227,7 @@ This setup allows you to verify the complete flow—from checking overdue tasks,
 ## Testing API
 
 Use Postman to test all API endpoints.  
-✅ A complete collection is provided: `Task-Management-API-Documentation.postman_collection.json` in the root folder.
+✅ A complete collection is provided: `task-management-api-documentation.postman_collection.json` in the root folder.
 
 ---
 
