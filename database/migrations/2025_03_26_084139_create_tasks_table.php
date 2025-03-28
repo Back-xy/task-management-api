@@ -27,6 +27,7 @@ return new class extends Migration
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->foreignId('parent_id')->nullable()->constrained('tasks')->nullOnDelete();
             $table->date('due_date');
+            $table->timestamp('overdue_notified_at')->nullable();
             $table->timestamps();
         });
     }

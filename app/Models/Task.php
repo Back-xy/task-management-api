@@ -18,6 +18,7 @@ class Task extends Model
         'created_by',
         'parent_id',
         'due_date',
+        'overdue_notified_at',
     ];
 
     public function assignee()
