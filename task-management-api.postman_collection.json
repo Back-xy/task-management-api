@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "82ceb0f1-a09b-449f-9e9f-b77278e2dbd7",
+		"_postman_id": "f18a2a21-2e78-4a4b-b591-bd3e955af48b",
 		"name": "task-management-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "22389980"
@@ -260,7 +260,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"title\": \"Task One\",\r\n  \"description\": \"Set up store and show methods\",\r\n  \"due_date\": \"2025-04-01\"\r\n}\r\n",
+							"raw": "{\r\n  \"title\": \"Postman Overdue Test\",\r\n  \"description\": \"Created from Postman\",\r\n  \"due_date\": \"2024-03-01\",\r\n  \"status\": \"IN_PROGRESS\",\r\n  \"assigned_to\": 2\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -372,7 +372,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"assigned_to\": 5\r\n}\r\n",
+							"raw": "{\r\n  \"assigned_to\": 7\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -432,6 +432,46 @@
 								"api",
 								"tasks",
 								"32"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Imports",
+			"item": [
+				{
+					"name": "Check Import Progress",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/import-status/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"import-status",
+								"1"
 							]
 						}
 					},
