@@ -2,21 +2,24 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
+use App\Models\Task;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Task;
 
 class TaskOverdueEvent implements ShouldBroadcast
 {
     use SerializesModels;
 
+    /**
+     * Create a new event instance.
+     */
     public function __construct(public Task $task) {}
 
+    /**
+     * Define the private channel the event will broadcast on.
+     * Only the Product Owner who created the task will receive the alert.
+     */
     public function broadcastOn(): array
     {
         return [
@@ -24,11 +27,17 @@ class TaskOverdueEvent implements ShouldBroadcast
         ];
     }
 
+    /**
+     * Custom name for the broadcast event.
+     */
     public function broadcastAs(): string
     {
         return 'task.overdue';
     }
 
+    /**
+     * Data to send along with the broadcast event.
+     */
     public function broadcastWith()
     {
         return [

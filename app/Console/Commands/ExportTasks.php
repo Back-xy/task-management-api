@@ -12,15 +12,11 @@ class ExportTasks extends Command
 {
     /**
      * The name and signature of the console command.
-     *
-     * @var string
      */
     protected $signature = 'export:tasks {--path=storage/app/tasks.csv : File path to export to}';
 
     /**
      * The console command description.
-     *
-     * @var string
      */
     protected $description = 'Export all tasks to a CSV file';
 
@@ -29,7 +25,7 @@ class ExportTasks extends Command
      */
     public function handle()
     {
-        // Generate unique filename using current timestamp
+        // Generate a unique filename with timestamp
         $timestamp = now()->format('Y-m-d_H-i-s');
         $fileName = "tasks_{$timestamp}.csv";
 
@@ -41,17 +37,17 @@ class ExportTasks extends Command
 
         $filePath = "{$exportDir}/{$fileName}";
 
-        // Fetch all tasks with related user info
+        // Fetch all tasks with their assignee and creator
         $tasks = Task::with(['assignee:id,name', 'creator:id,name'])->get();
 
-        // Create CSV writer using in-memory temporary file
+        // Create a CSV writer using a temporary in-memory file
         $csv = Writer::createFromFileObject(new SplTempFileObject());
-        $csv->setEscape(''); // Avoid PHP 8.4+ deprecation warning
+        $csv->setEscape(''); // Prevent PHP 8.4+ deprecation warning
 
-        // Insert header row
+        // Insert the CSV header row
         $csv->insertOne(['ID', 'Title', 'Description', 'Status', 'Due Date', 'Assigned To', 'Created By']);
 
-        // Insert task rows
+        // Insert each task as a row
         foreach ($tasks as $task) {
             $csv->insertOne([
                 $task->id,
@@ -64,8 +60,10 @@ class ExportTasks extends Command
             ]);
         }
 
-        // Save to file and confirm
+        // Save the CSV to disk
         file_put_contents($filePath, (string) $csv);
+
+        // Output success message
         $this->info("Tasks exported to: storage/app/exports/{$fileName}");
     }
 }

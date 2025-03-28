@@ -34,6 +34,9 @@ class User extends Authenticatable
         'password',
     ];
 
+    /**
+     * Get all tasks assigned to this user.
+     */
     public function tasksAssigned()
     {
         return $this->hasMany(Task::class, 'assigned_to');

@@ -8,7 +8,7 @@ use Illuminate\Auth\Access\Response;
 class UserPolicy
 {
     /**
-     * Determine whether the user can view any models.
+     * Allow only product owners to view the list of users.
      */
     public function viewAny(User $user)
     {
@@ -16,7 +16,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can create models.
+     * Allow only product owners to create new users.
      */
     public function create(User $user)
     {
@@ -24,7 +24,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Allow only product owners to update user profiles.
      */
     public function update(User $user, User $model)
     {
@@ -32,7 +32,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * Allow only product owners to delete users.
      */
     public function delete(User $user, User $model)
     {

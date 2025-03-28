@@ -11,10 +11,15 @@ use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
+    /**
+     * Return a list of tasks with optional filters.
+     */
     public function index(Request $request)
     {
+        // Start with base query and eager-load relations
         $query = Task::with(['assignee:id,name', 'creator:id,name']);
 
+        // Apply search filters (title, description, or ID)
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
@@ -23,24 +28,31 @@ class TaskController extends Controller
             });
         }
 
+        // Filter by assignee's name
         if ($assigneeName = $request->input('assignee_name')) {
             $query->whereHas('assignee', function ($q) use ($assigneeName) {
                 $q->where('name', 'like', "%{$assigneeName}%");
             });
         }
 
+        // Filter by one or more assigned user IDs
         if ($assignedTo = $request->input('assigned_to')) {
             $ids = explode(',', $assignedTo);
             $query->whereIn('assigned_to', $ids);
         }
 
+        // Return tasks as JSON sorted by newest first
         $tasks = $query->orderBy('created_at', 'desc')->get();
 
         return response()->json($tasks);
     }
 
+    /**
+     * Create and store a new task.
+     */
     public function store(Request $request)
     {
+        // Validate incoming task data
         $validated = $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'required|string',
@@ -49,6 +61,7 @@ class TaskController extends Controller
             'parent_id'   => 'nullable|exists:tasks,id',
         ]);
 
+        // Create and save the task
         $task = Task::create([
             'title'       => $validated['title'],
             'description' => $validated['description'],
@@ -59,14 +72,19 @@ class TaskController extends Controller
             'created_by'  => Auth::id(),
         ]);
 
+        // Return success response and created task
         return response()->json([
             'message' => 'Task created successfully',
             'task'    => $task,
         ], 201);
     }
 
+    /**
+     * Show the full details of a specific task.
+     */
     public function show(Task $task)
     {
+        // Load related data for detailed view
         $task->load([
             'subtasks:id,title,description,status,assigned_to,parent_id',
             'logs',
@@ -75,14 +93,18 @@ class TaskController extends Controller
             'parent:id,title'
         ]);
 
+        // Return detailed task as JSON
         return response()->json($task);
     }
 
+    /**
+     * Update an existing task (title, description, status, assigned_to).
+     */
     public function update(Request $request, Task $task)
     {
         $user = Auth::user();
 
-        // Validate input fields
+        // Validate request input
         $validated = $request->validate([
             'title'       => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
@@ -92,7 +114,7 @@ class TaskController extends Controller
 
         $updates = [];
 
-        // Only Product Owner can update title, description, and assigned_to
+        // Product Owner can update core fields
         if ($user->role === 'product_owner') {
             if (isset($validated['title']) && $task->title !== $validated['title']) {
                 $updates[] = ['field_changed' => 'title', 'old_value' => $task->title, 'new_value' => $validated['title']];
@@ -114,7 +136,7 @@ class TaskController extends Controller
             }
         }
 
-        // Handle status changes using validated fields
+        // Handle status changes by role permissions
         if (isset($validated['status']) && $task->status !== $validated['status']) {
             $newStatus = $validated['status'];
 
@@ -128,21 +150,26 @@ class TaskController extends Controller
             };
 
             if (! $allowed) {
+                // Return forbidden if role cannot transition to requested status
                 return response()->json(['message' => 'Invalid status transition for your role.'], 403);
             }
 
             $updates[] = ['field_changed' => 'status', 'old_value' => $task->status, 'new_value' => $newStatus];
             $task->status = $newStatus;
 
+            // Trigger auto-assignment logic based on status
             $this->handleAutoAssignment($task, $newStatus);
         }
 
+        // Notify assigned user if assignment changed
         if ($task->isDirty('assigned_to') && $task->assigned_to) {
             $task->assignee?->notify(new TaskAssigned($task));
         }
 
+        // Save task changes
         $task->save();
 
+        // Log each change in the task_logs table
         foreach ($updates as $update) {
             TaskLog::create([
                 'task_id'       => $task->id,
@@ -153,17 +180,23 @@ class TaskController extends Controller
             ]);
         }
 
-        return response()->json(['message' => 'Task updated successfully', 'task' => $task]);
+        return response()->json([
+            'message' => 'Task updated successfully',
+            'task'    => $task,
+        ]);
     }
 
+    /**
+     * Automatically assign the task based on its status.
+     */
     protected function handleAutoAssignment(Task $task, string $newStatus)
     {
-        // Assign to Product Owner on review or rejection
+        // When moving to PO_REVIEW or REJECTED, assign to Product Owner
         if (in_array($newStatus, ['PO_REVIEW', 'REJECTED'])) {
             $task->assigned_to = $task->created_by;
         }
 
-        // Assign to tester with fewest READY_FOR_TEST tasks
+        // When moving to READY_FOR_TEST, assign to tester with fewest tasks
         if ($newStatus === 'READY_FOR_TEST') {
             $tester = User::where('role', 'tester')
                 ->withCount('tasksAssigned')
@@ -175,7 +208,7 @@ class TaskController extends Controller
             }
         }
 
-        // Reassign to developer if returning for work or marking done
+        // When moving to IN_PROGRESS or DONE, reassign to previous developer
         if (in_array($newStatus, ['IN_PROGRESS', 'DONE'])) {
             $lastDev = TaskLog::where('task_id', $task->id)
                 ->where('field_changed', 'status')
@@ -189,10 +222,12 @@ class TaskController extends Controller
         }
     }
 
-
-
+    /**
+     * Delete a task.
+     */
     public function destroy(Task $task)
     {
+        // Delete task from the database
         $task->delete();
 
         return response()->json(['message' => 'Task deleted successfully']);

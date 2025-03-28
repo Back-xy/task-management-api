@@ -17,9 +17,7 @@ class TaskAssigned extends Notification implements ShouldQueue
     public function __construct(public $task) {}
 
     /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
+     * Define the delivery channels for this notification.
      */
     public function via(object $notifiable): array
     {
@@ -27,7 +25,7 @@ class TaskAssigned extends Notification implements ShouldQueue
     }
 
     /**
-     * Get the mail representation of the notification.
+     * Build the email message for the assigned task.
      */
     public function toMail(object $notifiable): MailMessage
     {
@@ -43,14 +41,12 @@ class TaskAssigned extends Notification implements ShouldQueue
     }
 
     /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
+     * Provide an optional array representation of the notification.
      */
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            // Optional: Add array representation if needed
         ];
     }
 }

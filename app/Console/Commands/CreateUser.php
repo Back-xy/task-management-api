@@ -10,15 +10,11 @@ class CreateUser extends Command
 {
     /**
      * The name and signature of the console command.
-     *
-     * @var string
      */
     protected $signature = 'app:create-user';
 
     /**
      * The console command description.
-     *
-     * @var string
      */
     protected $description = 'Create a new user via the CLI interactively';
 
@@ -27,16 +23,19 @@ class CreateUser extends Command
      */
     public function handle()
     {
+        // Prompt for user details
         $name     = $this->ask("What's the user's name?");
         $email    = $this->ask("What's the user's email?");
         $password = $this->secret("Set a secure password");
         $role     = $this->choice("Choose a role", ['product_owner', 'developer', 'tester']);
 
+        // Check if the email is already taken
         if (User::where('email', $email)->exists()) {
             $this->error('❌ A user with this email already exists.');
             return 1;
         }
 
+        // Create the user
         $user = User::create([
             'name'     => $name,
             'email'    => $email,
@@ -44,7 +43,9 @@ class CreateUser extends Command
             'role'     => $role,
         ]);
 
+        // Output success message
         $this->info("✅ User [{$user->email}] created successfully with role: {$user->role}");
+
         return 0;
     }
 }

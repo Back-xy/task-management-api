@@ -9,7 +9,7 @@ use Illuminate\Auth\Access\Response;
 class TaskPolicy
 {
     /**
-     * Determine whether the user can view any models.
+     * Allow all roles to view the list of tasks.
      */
     public function viewAny(User $user)
     {
@@ -17,7 +17,7 @@ class TaskPolicy
     }
 
     /**
-     * Determine whether the user can view the model.
+     * Allow all users to view individual tasks.
      */
     public function view(User $user, Task $task)
     {
@@ -25,7 +25,7 @@ class TaskPolicy
     }
 
     /**
-     * Determine whether the user can create models.
+     * Allow only product owners to create tasks.
      */
     public function create(User $user)
     {
@@ -33,16 +33,16 @@ class TaskPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Allow all roles to attempt task updates.
+     * (Detailed role-based logic is handled inside the controller.)
      */
     public function update(User $user, Task $task)
     {
-        // TaskController handles complex status logic internally
         return true;
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * Allow only product owners to delete tasks.
      */
     public function delete(User $user, Task $task)
     {
