@@ -230,6 +230,8 @@ To test the WebSocket alert functionality, follow these steps:
 
 This complete flow lets you verify everything—from detecting overdue tasks, broadcasting the event, to receiving the real‑time alert on the frontend.
 
+---
+
 ## Testing API
 
 Use Postman to test all API endpoints.  
