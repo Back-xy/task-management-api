@@ -11,10 +11,14 @@ window.Echo = new Echo({
     wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
     forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? "https") === "https",
     enabledTransports: ["ws", "wss"],
+    auth: {
+        headers: {
+            Authorization: `Bearer ${yourTokenHere}`,
+        },
+    },
 });
 
-// Listen for overdue tasks
-// Echo.private(`user.${userId}`).listen(".task.overdue", (e) => {
-//     console.warn("Overdue Task:", e.task.title);
-//     alert(`⚠️ Task "${e.task.title}" is overdue!`);
-// });
+Echo.private(`user.${userId}`).listen(".task.overdue", (event) => {
+    console.log("Overdue task!", event.task);
+    // Show alert, notify product owner, etc.
+});
