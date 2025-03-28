@@ -11,7 +11,7 @@ class CreateUser extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'app:create-user';
+    protected $signature = 'user:create';
 
     /**
      * The console command description.
