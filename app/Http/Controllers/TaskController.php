@@ -81,43 +81,49 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         $user = Auth::user();
+
+        // Validate input fields
+        $validated = $request->validate([
+            'title'       => 'sometimes|required|string|max:255',
+            'description' => 'sometimes|required|string',
+            'assigned_to' => 'sometimes|required|integer|exists:users,id',
+            'status'      => 'sometimes|required|in:TODO,IN_PROGRESS,READY_FOR_TEST,PO_REVIEW,DONE,REJECTED',
+        ]);
+
         $updates = [];
 
-        // Only Product Owner can update title/description/assigned_to
+        // Only Product Owner can update title, description, and assigned_to
         if ($user->role === 'product_owner') {
-            if ($request->filled('title') && $task->title !== $request->title) {
-                $updates[] = ['field_changed' => 'title', 'old_value' => $task->title, 'new_value' => $request->title];
-                $task->title = $request->title;
+            if (isset($validated['title']) && $task->title !== $validated['title']) {
+                $updates[] = ['field_changed' => 'title', 'old_value' => $task->title, 'new_value' => $validated['title']];
+                $task->title = $validated['title'];
             }
 
-            if ($request->filled('description') && $task->description !== $request->description) {
-                $updates[] = ['field_changed' => 'description', 'old_value' => $task->description, 'new_value' => $request->description];
-                $task->description = $request->description;
+            if (isset($validated['description']) && $task->description !== $validated['description']) {
+                $updates[] = ['field_changed' => 'description', 'old_value' => $task->description, 'new_value' => $validated['description']];
+                $task->description = $validated['description'];
             }
 
-            if ($request->filled('assigned_to') && $task->assigned_to !== $request->assigned_to) {
+            if (isset($validated['assigned_to']) && $task->assigned_to !== $validated['assigned_to']) {
                 $updates[] = [
                     'field_changed' => 'assigned_to',
                     'old_value'     => $task->assigned_to,
-                    'new_value'     => $request->assigned_to,
+                    'new_value'     => $validated['assigned_to'],
                 ];
-                $task->assigned_to = $request->assigned_to;
+                $task->assigned_to = $validated['assigned_to'];
             }
         }
 
-        // Handle status changes
-        if ($request->has('status') && $task->status !== $request->status) {
-            $newStatus = $request->status;
+        // Handle status changes using validated fields
+        if (isset($validated['status']) && $task->status !== $validated['status']) {
+            $newStatus = $validated['status'];
 
             $allowed = match ($user->role) {
                 'developer' => $task->assigned_to === $user->id &&
                     in_array([$task->status, $newStatus], [['TODO', 'IN_PROGRESS'], ['IN_PROGRESS', 'READY_FOR_TEST']]),
-
                 'tester' => $task->assigned_to === $user->id &&
                     $task->status === 'READY_FOR_TEST' && $newStatus === 'PO_REVIEW',
-
                 'product_owner' => in_array($newStatus, ['DONE', 'IN_PROGRESS', 'REJECTED']),
-
                 default => false,
             };
 
@@ -160,7 +166,7 @@ class TaskController extends Controller
         // Assign to tester with fewest READY_FOR_TEST tasks
         if ($newStatus === 'READY_FOR_TEST') {
             $tester = User::where('role', 'tester')
-                ->withCount('tasksAssigned') // Count all tasks assigned to tester
+                ->withCount('tasksAssigned')
                 ->orderBy('tasks_assigned_count', 'asc')
                 ->first();
 
@@ -182,6 +188,7 @@ class TaskController extends Controller
             }
         }
     }
+
 
 
     public function destroy(Task $task)

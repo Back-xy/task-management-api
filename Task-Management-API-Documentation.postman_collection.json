@@ -1,7 +1,8 @@
 {
 	"info": {
 		"_postman_id": "f18a2a21-2e78-4a4b-b591-bd3e955af48b",
-		"name": "task-management-api",
+		"name": "Task-Management-API-Documentation",
+		"description": "This API provides endpoints for user authentication, user management, task management, and CSV import status checking. The endpoints use token-based authentication (except for login). Replace `{{base_url}}` with your API base URL (e.g., `http://localhost:8000`) when testing in Postman.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "22389980"
 	},
@@ -67,7 +68,8 @@
 								"api",
 								"login"
 							]
-						}
+						},
+						"description": "Authenticates a user using their email and password. On success, it returns a JWT token which is stored in the environment (using a Postman test script) for subsequent requests."
 					},
 					"response": []
 				}
@@ -99,7 +101,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Test Developer\",\r\n  \"email\": \"dev1@example.com\",\r\n  \"password\": \"111111\",\r\n  \"role\": \"developer\"\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"Test Developer\",\r\n  \"email\": \"dev1@examplee.com\",\r\n  \"password\": \"111111\",\r\n  \"role\": \"developer\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -176,7 +178,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Updated Developerrrr\",\r\n  \"email\": \"updated.dev1@example.com\",\r\n  \"password\": \"newpassword123\",\r\n  \"role\": \"tester\"\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"John Smith\",\r\n  \"email\": \"john.smith@example.com\",\r\n  \"password\": \"newpassword123\",\r\n  \"role\": \"developer\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -184,14 +186,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/users/2",
+							"raw": "{{base_url}}/api/users/4",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"users",
-								"2"
+								"4"
 							]
 						}
 					},
@@ -260,7 +262,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"title\": \"Postman Overdue Test\",\r\n  \"description\": \"Created from Postman\",\r\n  \"due_date\": \"2024-03-01\",\r\n  \"status\": \"IN_PROGRESS\",\r\n  \"assigned_to\": 2\r\n}\r\n",
+							"raw": "{\r\n  \"title\": \"Postman New Task\",\r\n  \"description\": \"Created from Postman\",\r\n  \"due_date\": \"2024-05-01\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -372,7 +374,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"assigned_to\": 7\r\n}\r\n",
+							"raw": "{\r\n  \"title\": \"Updated Task Title\",\r\n  \"description\": \"This is the updated description of the task.\",\r\n  \"assigned_to\": 4\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -380,14 +382,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/tasks/33",
+							"raw": "{{base_url}}/api/tasks/30",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"tasks",
-								"33"
+								"30"
 							]
 						}
 					},
