@@ -179,7 +179,7 @@ Emails are sent in the background when tasks are assigned. Make sure Mailtrap cr
 
 ---
 
-## WebSocket Alerts
+## WebSocket Alerts (Backend)
 
 When a task passes its due date, the product owner will receive a WebSocket event.
 
@@ -193,7 +193,7 @@ Below is guide documentation snippet that explains how the WebSocket alerts work
 
 ---
 
-## WebSocket Alerts
+## WebSocket Alerts (Frontend)
 
 When a task passes its due date, the product owner will receive a WebSocket event. The event is broadcast via:
 
@@ -201,34 +201,34 @@ When a task passes its due date, the product owner will receive a WebSocket even
 
 The product owner must be listening on a private channel (e.g., `user.{userId}`) to receive these events.
 
-The scheduled command that checks for overdue tasks and triggers the event is set up like this:
-
-```php
-Schedule::command('tasks:check-overdue')->everyTenSeconds();
-```
-
 ### Testing the WebSocket Alert via Frontend
 
-To test the WebSocket alert functionality:
+To test the WebSocket alert functionality, follow these steps:
 
 1. **Login:**  
-   Use the Login page at `/login` to authenticate as the Product Owner.  
-   Upon successful login, the user is redirected to the Test Alert page.
+   Use the Login page at `/login` to authenticate as a Product Owner. Upon successful login, you’ll be redirected to the Test Alert page.
 
-2. **Test Alert Page:**  
-   This page establishes a WebSocket connection using Reverb and listens on the private channel (`user.{userId}`).
+2. **Build Assets:**  
+   Make sure to run either:
+   ```bash
+   npm run dev
+   ```
+   or
+   ```bash
+   npm run build
+   ```
+   This step compiles your assets and registers the Reverb key (and other environment variables) in your frontend build.
 
-3. **Trigger an Alert:**  
+3. **Test Alert Page:**  
+   The Test Alert page establishes a WebSocket connection using Reverb and listens on the private channel (`user.{userId}`).  
+   
+4. **Trigger an Alert:**  
    When a task passes its due date (and is not marked as DONE or REJECTED), the scheduled command will broadcast a `TaskOverdue` event. The Test Alert page will immediately display the event details (in JSON format).
 
-4. **Sign Out:**  
+5. **Sign Out:**  
    Use the Sign Out button on the Test Alert page to clear your session and return to the login page, or test with another user.
 
-This setup allows you to verify the complete flow—from checking overdue tasks, broadcasting the event, to receiving the alert in real time on the frontend.
-
----
-
----
+This complete flow lets you verify everything—from detecting overdue tasks, broadcasting the event, to receiving the real‑time alert on the frontend.
 
 ## Testing API
 
