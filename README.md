@@ -1,66 +1,245 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task Management API – Laravel Backend Assignment
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a Laravel-based Task Management API built as part of Fastlink's Backend Assignment. It covers user roles, task lifecycle, background job processing, WebSocket alerts, and more.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Features Implemented
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+✅ Token-based authentication  
+✅ Role-based access: Product Owner, Developer, Tester  
+✅ Create/update/delete users via API or Artisan command  
+✅ Task lifecycle management with multiple statuses  
+✅ Subtask & parent task support  
+✅ Task logs for status/title/description changes  
+✅ Automated re-assignments based on status  
+✅ Task import via CSV using queued jobs  
+✅ Task export to CSV  
+✅ Job progress tracking API  
+✅ WebSocket alert to Product Owner when task is overdue  
+✅ Email notification when a task is assigned  
+✅ Task list and detail APIs with filtering and searching  
+✅ Postman Collection provided  
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Framework:** Laravel 11+
+- **Database:** MySQL
+- **Broadcasting:** Laravel Reverb (WebSocket)
+- **Mail:** Mailtrap (or any SMTP)
+- **Queues:** Database driver
+- **Frontend Test:** Vite + Echo (optional)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+### 1. Clone the Repository
+```bash
+git clone https://github.com/back-xy/task-management-api.git
+cd task-management-api
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 2. Install Dependencies
+```bash
+composer install
+npm install && npm run build
+```
 
-### Premium Partners
+### 3. Create `.env` File
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 4. Set Up `.env` Variables
+Update these in your `.env` file:
 
-## Contributing
+#### Database
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_db
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### Mail (example using Mailtrap)
+```
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_mailtrap_username
+MAIL_PASSWORD=your_mailtrap_password
+MAIL_FROM_ADDRESS=task@app.com
+MAIL_FROM_NAME="Task Management"
+```
 
-## Code of Conduct
+#### WebSockets (Reverb)
+```
+BROADCAST_DRIVER=reverb
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+REVERB_APP_ID=your-app-id
+REVERB_APP_KEY=your-app-key
+REVERB_APP_SECRET=your-app-secret
+REVERB_HOST=127.0.0.1
+REVERB_PORT=8080
 
-## Security Vulnerabilities
+VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"
+VITE_REVERB_HOST="${REVERB_HOST}"
+VITE_REVERB_PORT="${REVERB_PORT}"
+VITE_REVERB_SCHEME="http"
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 5. Migrate and Seed
+```bash
+php artisan migrate --seed
+```
 
-## License
+This will create some fake users and tasks.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+##  Run the Project
+
+### 1. Start the Laravel App
+```bash
+php artisan serve
+```
+
+### 2. Start the Queue Worker (for emails, import, etc.)
+```bash
+php artisan queue:work
+```
+
+### 3. Start WebSocket Server (Reverb)
+```bash
+php artisan reverb:start
+```
+
+### 4. Start the Laravel Scheduler
+```bash
+php artisan schedule:work
+```
+
+---
+
+## Artisan Commands
+
+### Export Tasks to CSV
+```bash
+php artisan export:tasks
+```
+
+CSV will be saved in `storage/app/exports/`.
+
+---
+
+### Import Tasks from CSV
+```bash
+php artisan import:tasks {relative_path_to_file}
+```
+
+Example:
+```bash
+php artisan import:tasks imports/tasks.csv
+```
+
+Then track the progress using API:
+```
+GET /api/import-status/{id}
+```
+
+---
+
+### Create Users via Artisan
+```bash
+php artisan user:create
+```
+
+---
+
+## Email Notification
+
+Emails are sent in the background when tasks are assigned. Make sure Mailtrap credentials in `.env` are correct and `php artisan queue:work` is running.
+
+---
+
+## WebSocket Alerts
+
+When a task passes its due date, the product owner will receive a WebSocket event.
+
+> Product owner must be listening to a private channel like: `task-due.{userId}`
+
+Broadcast events:
+- `App\Events\TaskOverdue`
+
+Scheduled every 10 seconds using:
+```php
+Schedule::command('tasks:check-overdue')->everyTenSeconds();
+```
+
+Below is an updated documentation snippet that explains how the WebSocket alerts work and how testers can verify them using the frontend route we created:
+
+---
+
+## WebSocket Alerts
+
+When a task passes its due date, the product owner will receive a WebSocket event. The event is broadcast via:
+
+- **Event Class:** `App\Events\TaskOverdue`
+
+The product owner must be listening on a private channel (e.g., `user.{userId}`) to receive these events.
+
+The scheduled command that checks for overdue tasks and triggers the event is set up like this:
+
+```php
+Schedule::command('tasks:check-overdue')->everyTenSeconds();
+```
+
+### Testing the WebSocket Alert via Frontend
+
+To test the WebSocket alert functionality:
+
+1. **Login:**  
+   Use the Login page at `/login` to authenticate as the Product Owner.  
+   Upon successful login, the user is redirected to the Test Alert page.
+
+2. **Test Alert Page:**  
+   This page establishes a WebSocket connection using Reverb and listens on the private channel (`user.{userId}`).
+
+3. **Trigger an Alert:**  
+   When a task passes its due date (and is not marked as DONE or REJECTED), the scheduled command will broadcast a `TaskOverdue` event. The Test Alert page will immediately display the event details (in JSON format).
+
+4. **Sign Out:**  
+   Use the Sign Out button on the Test Alert page to clear your session and return to the login page, or test with another user.
+
+This setup allows you to verify the complete flow—from checking overdue tasks, broadcasting the event, to receiving the alert in real time on the frontend.
+
+---
+
+---
+
+## Testing API
+
+Use Postman to test all API endpoints.  
+✅ A complete collection is provided: `Task-Management-API-Documentation.postman_collection.json` in the root folder.
+
+---
+
+## ❌ Not Implemented Yet
+
+- No unit/feature tests  
+- No Docker  
+- No live deployment  
+
+---
+
+## ✅ Project Completed!
+
+Everything listed in the assignment has been implemented and tested.
+
+Let me know if you need help turning this into a Dockerized or deployed solution later!
